@@ -54,7 +54,6 @@ func getTimeTable(config *TimeTableConfig) {
 	params.Add("template", `Set3`)
 	params.Add("KW", strconv.Itoa(config.getKW()))
 	params.Add("days", `1-6`)
-	params.Add("periods", `1-56`)
 	body := strings.NewReader(params.Encode())
 
 	req, err := http.NewRequest(http.MethodPost, "https://www.jade-hs.de/apps/infosys/splan.php", body)
