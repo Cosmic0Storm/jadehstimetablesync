@@ -1,0 +1,15 @@
+---
+CalendarUrl: https://cloud.local.rohrmann.online/remote.php/dav/calendars/Arvid/caldav_test
+Degree: "MIT Winf"
+MaxKWOffset: 2
+MinSemester: 1
+MaxSemester: 3
+
+ModuleWhitelist:
+  - "Einführung in die Wirtschaftsinformatik"
+  - "Programmieren 1"
+  - "Kosten- und Leistungsrechnung"
+  - "Wissenschaftliches Arbeiten"
+  - "IT-Projektmanagement"
+  - "Geschäftsprozesse"
+  - "Externes Rechnungswesen Winf"
