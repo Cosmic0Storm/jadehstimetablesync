@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY go.mod go.sum ./
 
-COPY *.go ./
+COPY . .
 
-RUN GOOS=linux go build -o /sync
+RUN go build -o /sync
 
 FROM busybox
 COPY --from=builder /sync sync
