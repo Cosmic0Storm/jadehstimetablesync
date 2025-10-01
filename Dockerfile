@@ -9,6 +9,6 @@ COPY . .
 RUN go build -o /sync
 
 FROM busybox
-COPY --from=builder /sync sync
+COPY --from=builder /sync /sync
 
 CMD ["/sync"]

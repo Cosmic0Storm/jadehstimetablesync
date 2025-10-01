@@ -1,0 +1,10 @@
+services:
+  webcalsync:
+    container_name: webcalsync
+    build:
+      context: .
+    restart: always
+    env_file:
+      - .secrets.env
+    volumes:
+      - ./config.yml:/config.yml

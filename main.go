@@ -27,12 +27,18 @@ const (
 )
 
 func main() {
+	config, err := internal.SetupConfig()
+	if err != nil {
+		log.Printf(LOG_ERR_SETUP_CONFIG, err.Error())
+		return
+	}
+
 	scheduler, err := gocron.NewScheduler()
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = scheduler.NewJob(gocron.CronJob("0 */4 * * *", false), gocron.NewTask(sync))
+	_, err = scheduler.NewJob(gocron.CronJob("0 */4 * * *", false), gocron.NewTask(sync, config))
 	if err != nil {
 		panic(err)
 	}
@@ -49,12 +55,7 @@ func main() {
 	}
 }
 
-func sync() {
-	config, err := internal.SetupConfig()
-	if err != nil {
-		log.Printf(LOG_ERR_SETUP_CONFIG, err.Error())
-		return
-	}
+func sync(config *internal.Config) {
 
 	caldavConf := internal.GetCaldavConfiguration(config)
 
