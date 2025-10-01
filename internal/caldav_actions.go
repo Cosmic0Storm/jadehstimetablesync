@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -94,7 +95,10 @@ func GetKnownEvents(client *caldav.Client, ctx context.Context, config CaldavCon
 	}
 
 	for _, event := range events {
-		kownEventIDs = append(kownEventIDs, strings.Replace(event.Path, config.CalendarURL.Path, "", 1)[1:])
+		id := strings.Replace(event.Path, config.CalendarURL.Path, "", 1)[1:]
+		id = strings.ReplaceAll(id, "%20", " ")
+
+		kownEventIDs = append(kownEventIDs, id)
 	}
 
 	return kownEventIDs, nil
@@ -103,4 +107,28 @@ func GetKnownEvents(client *caldav.Client, ctx context.Context, config CaldavCon
 func AddEvent(client *caldav.Client, ctx context.Context, config CaldavConfiguration, req AddEventRequest) error {
 	_, err := client.PutCalendarObject(ctx, req.GetUrl(), req.GetICalRepr())
 	return err
+}
+
+func DeleteEvent(client *caldav.Client, ctx context.Context, config CaldavConfiguration, id string) error {
+	httpClient := &http.Client{}
+
+	webdavClient := webdav.HTTPClientWithBasicAuth(httpClient, config.Username, config.Password)
+
+	err := client.RemoveAll(ctx, config.CalendarURL.JoinPath(id).EscapedPath())
+
+	req, err := http.NewRequest(http.MethodDelete, config.CalendarURL.JoinPath(id).String(), nil)
+	if err != nil {
+		return err
+	}
+
+	resp, err := webdavClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode == 404 {
+		return nil
+	}
+
+	return errors.New("Event not deleted")
 }

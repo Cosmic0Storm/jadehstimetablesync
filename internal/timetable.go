@@ -190,7 +190,6 @@ func GetTimeTable(config *TimeTableConfig) ([]TimeTableEvent, error) {
 			weekday := 0
 
 			for weekdayOffset, col := range columns {
-				log.Printf("Col: %d, BeginCol: %d EndCol: %d", column, col.BeginColumn, col.EndColumn)
 				if col.BeginColumn == col.EndColumn && column == col.BeginColumn {
 					weekday = weekdayOffset
 				}
@@ -198,8 +197,6 @@ func GetTimeTable(config *TimeTableConfig) ([]TimeTableEvent, error) {
 					weekday = weekdayOffset
 				}
 			}
-
-			log.Printf("Col: %d, Weekday: %d\n", column, weekday)
 
 			daysToAddToStartEvent := daysToAddToStartEventWithoutWeekday + weekday - 1
 

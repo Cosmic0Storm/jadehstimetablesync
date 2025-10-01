@@ -6,6 +6,8 @@ import (
 	"slices"
 	"time"
 
+	"github.com/go-co-op/gocron/v2"
+
 	"git.local.rohrmann.online/arvid/jadehsstundenplansync/v2/internal"
 )
 
@@ -25,7 +27,29 @@ const (
 )
 
 func main() {
+	scheduler, err := gocron.NewScheduler()
+	if err != nil {
+		panic(err)
+	}
 
+	_, err = scheduler.NewJob(gocron.CronJob("0 */4 * * *", false), gocron.NewTask(sync))
+	if err != nil {
+		panic(err)
+	}
+
+	scheduler.Start()
+
+	channel := make(chan bool)
+
+	if res := <-channel; !res {
+		err = scheduler.Shutdown()
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func sync() {
 	config, err := internal.SetupConfig()
 	if err != nil {
 		log.Printf(LOG_ERR_SETUP_CONFIG, err.Error())
@@ -36,7 +60,7 @@ func main() {
 
 	background := context.Background()
 
-	ctx, timeout := context.WithTimeout(background, 5*60*time.Second)
+	ctx, timeout := context.WithTimeout(background, 10*60*time.Second)
 	defer timeout()
 
 	client, err := internal.SetupCalDav(ctx, caldavConf)
@@ -64,15 +88,15 @@ func main() {
 			}
 
 			partialTimeTable = internal.FilterTimeTableWithWhitelist(config.ModuleWhitelist, partialTimeTable)
-
 			timeTable = append(timeTable, partialTimeTable...)
 		}
 	}
 
+	eventsInTimeTable := make([]string, 0)
 	for _, timeTableEvent := range timeTable {
 
 		id := timeTableEvent.GetEventID()
-
+		eventsInTimeTable = append(eventsInTimeTable, id)
 		if !slices.Contains(knownEvents, id) {
 
 			req := internal.AddEventRequest{
@@ -86,8 +110,17 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+
 		}
 
 	}
 
+	for _, event := range knownEvents {
+		if !slices.Contains(eventsInTimeTable, event) {
+			err = internal.DeleteEvent(client, ctx, caldavConf, event)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
 }

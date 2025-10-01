@@ -1,7 +1,7 @@
 ---
-CalendarUrl: https://cloud.local.rohrmann.online/remote.php/dav/calendars/Arvid/caldav_test
+CalendarUrl: https://cloud.local.rohrmann.online/remote.php/dav/calendars/Arvid/studium
 Degree: "MIT Winf"
-MaxKWOffset: 2
+MaxKWOffset: 3
 MinSemester: 1
 MaxSemester: 3
 
