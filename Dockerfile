@@ -8,7 +8,7 @@ COPY . .
 
 RUN go build -o /sync
 
-FROM busybox
+FROM alpine
 COPY --from=builder /sync /sync
 
 CMD ["/sync"]
