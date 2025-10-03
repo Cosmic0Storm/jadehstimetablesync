@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/djimenez/iconv-go"
+	iconv "github.com/djimenez/iconv-go"
 	"github.com/emersion/go-ical"
 )
 

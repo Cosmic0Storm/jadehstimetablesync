@@ -7,4 +7,4 @@ services:
     env_file:
       - .secrets.env
     volumes:
-      - ./config.yml:/config.yml
+      - ./config.yml:/app/config.yml

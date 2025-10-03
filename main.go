@@ -28,6 +28,8 @@ const (
 
 func main() {
 
+	log.Println("Startup")
+
 	config, err := internal.SetupConfig()
 	if err != nil {
 		log.Printf(LOG_ERR_SETUP_CONFIG, err.Error())

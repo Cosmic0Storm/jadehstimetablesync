@@ -1,14 +1,16 @@
 FROM golang:1.24.7 AS builder
 
+ARG GOOS=linux
 WORKDIR /app
 
 COPY go.mod go.sum ./
-
+RUN go mod download
 COPY . .
+RUN go build -o ./webcalsync ./main.go
 
-RUN go build -o /sync
 
-FROM alpine
-COPY --from=builder /sync /app/sync
+FROM gcr.io/distroless/base-debian12
+WORKDIR /app
+COPY --from=builder /app/webcalsync /app/webcalsync
 
-CMD ["sync"]
+CMD ["/app/webcalsync"]
