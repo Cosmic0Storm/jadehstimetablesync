@@ -19,9 +19,6 @@ type LoggingRoundTripper struct{}
 
 func (t LoggingRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 
-	//log.Println(r.URL)
-	//log.Println(r.Body)
-
 	resp, err := http.DefaultTransport.RoundTrip(r)
 	if err != nil {
 		return resp, err

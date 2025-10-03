@@ -27,12 +27,18 @@ const (
 )
 
 func main() {
+
 	config, err := internal.SetupConfig()
 	if err != nil {
 		log.Printf(LOG_ERR_SETUP_CONFIG, err.Error())
 		return
 	}
 
+	log.Println("First Sync Started")
+
+	sync(config)
+
+	log.Println("First Sync Finished")
 	scheduler, err := gocron.NewScheduler()
 	if err != nil {
 		panic(err)
@@ -44,6 +50,7 @@ func main() {
 	}
 
 	scheduler.Start()
+	log.Println("Started Scheduler")
 
 	channel := make(chan bool)
 

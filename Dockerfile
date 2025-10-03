@@ -9,6 +9,6 @@ COPY . .
 RUN go build -o /sync
 
 FROM alpine
-COPY --from=builder /sync /sync
+COPY --from=builder /sync /app/sync
 
-CMD ["/sync"]
+CMD ["sync"]

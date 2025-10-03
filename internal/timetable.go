@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"slices"
@@ -91,10 +90,6 @@ func (t *TimeTableEvent) GetICalRepr(zone *time.Location) *ical.Calendar {
 }
 
 func GetTimeTable(config *TimeTableConfig) ([]TimeTableEvent, error) {
-
-	log.Println(config.KWOffset)
-	log.Println(config.getKW())
-
 	items := make([]TimeTableEvent, 0)
 
 	params := url.Values{}
