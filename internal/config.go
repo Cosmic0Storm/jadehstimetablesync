@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"log"
 	"net/url"
 	"time"
 
@@ -57,6 +58,8 @@ func (c *RawConfig) GetConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Println(timezone)
 
 	return &Config{
 		CalendarUrl:     *url,
