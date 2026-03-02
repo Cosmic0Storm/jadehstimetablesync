@@ -27,7 +27,7 @@ const (
 )
 
 func main() {
-
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	log.Println("Startup")
 
 	config, err := internal.SetupConfig()
@@ -46,7 +46,7 @@ func main() {
 		panic(err)
 	}
 
-	_, err = scheduler.NewJob(gocron.CronJob("0 */4 * * *", false), gocron.NewTask(sync, config))
+	_, err = scheduler.NewJob(gocron.CronJob(config.CronSchedule, false), gocron.NewTask(sync, config))
 	if err != nil {
 		panic(err)
 	}
@@ -65,11 +65,8 @@ func main() {
 }
 
 func sync(config *internal.Config) {
-
 	caldavConf := internal.GetCaldavConfiguration(config)
-
 	background := context.Background()
-
 	ctx, timeout := context.WithTimeout(background, 10*60*time.Second)
 	defer timeout()
 
@@ -84,15 +81,10 @@ func sync(config *internal.Config) {
 		panic(err)
 	}
 
-	germanyZone, err := time.LoadLocation(DEFAULT_TIMEZONE)
-	if err != nil {
-		panic(err)
-	}
-
 	timeTable := make([]internal.TimeTableEvent, 0)
 	for i := config.MinSemester; i <= config.MaxSemester; i++ {
 		for kwOffset := 0; kwOffset <= config.MaxKWOffset; kwOffset++ {
-			partialTimeTable, err := internal.GetTimeTable(internal.CreateTimeTableConfig(config.Degree, i, kwOffset))
+			partialTimeTable, err := internal.GetTimeTable(internal.CreateTimeTableConfig(config.Degree, i, kwOffset, config.Timezone))
 			if err != nil {
 				panic(err)
 			}
@@ -113,7 +105,7 @@ func sync(config *internal.Config) {
 				CalendarUrl: config.CalendarUrl,
 				Id:          id,
 				Event:       timeTableEvent,
-				TimeZone:    *germanyZone,
+				TimeZone:    config.Timezone,
 			}
 
 			err = internal.AddEvent(client, ctx, caldavConf, req)

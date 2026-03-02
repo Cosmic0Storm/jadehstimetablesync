@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -58,9 +57,6 @@ func (a *AddEventRequest) GetICalRepr() *ical.Calendar {
 }
 
 func SetupCalDav(ctx context.Context, config CaldavConfiguration) (*caldav.Client, error) {
-
-	log.SetFlags(log.Lshortfile)
-
 	httpClient := &http.Client{
 		Transport: LoggingRoundTripper{},
 	}

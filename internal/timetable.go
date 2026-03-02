@@ -32,8 +32,8 @@ func (config *TimeTableConfig) getKW() int {
 	return week + config.KWOffset
 }
 
-func CreateTimeTableConfig(degree string, semester, kwoffset int) *TimeTableConfig {
-	return &TimeTableConfig{Degree: degree, Semester: semester, KWOffset: kwoffset, Timestamp: time.Now()}
+func CreateTimeTableConfig(degree string, semester, kwoffset int, timezone time.Location) *TimeTableConfig {
+	return &TimeTableConfig{Degree: degree, Semester: semester, KWOffset: kwoffset, Timestamp: time.Now(), Timezone: timezone}
 }
 
 type TimeTableEvent struct {
@@ -67,11 +67,8 @@ func CreateSimpleTimeTableColumn(column int) *TimeTableColumn {
 }
 
 func (t *TimeTableEvent) GetICalRepr(zone *time.Location) *ical.Calendar {
-
 	event := ical.NewEvent()
 	event.Name = ical.CompEvent
-	event.DateTimeStart(t.Begin.Location())
-	event.DateTimeEnd(t.End.Location())
 	event.Props.SetText(ical.PropProductID, "jadecal")
 	event.Props.SetDateTime(ical.PropDateTimeStart, t.Begin)
 	event.Props.SetDateTime(ical.PropDateTimeEnd, t.End)
@@ -79,7 +76,7 @@ func (t *TimeTableEvent) GetICalRepr(zone *time.Location) *ical.Calendar {
 	event.Props.SetText(ical.PropLocation, t.Room)
 	event.Props.SetText(ical.PropUID, t.GetEventID())
 	event.Props.SetText(ical.PropSummary, t.Name)
-	event.Props.SetDateTime(ical.PropDateTimeStamp, time.Now())
+	event.Props.SetDateTime(ical.PropDateTimeStamp, time.Now().In(zone))
 
 	calendar := ical.NewCalendar()
 	calendar.Props.SetText(ical.PropProductID, "-//jade-hs//SplanCalDavSync//EN")
@@ -173,7 +170,9 @@ func GetTimeTable(config *TimeTableConfig) ([]TimeTableEvent, error) {
 		if firstCellText == "" {
 			continue
 		}
+
 		startTime, err := time.ParseInLocation("15:04", row.Find(".row-label-one").First().Text(), &config.Timezone)
+		//println(startTime.Location().String())
 		if err != nil {
 			return items, err
 		}

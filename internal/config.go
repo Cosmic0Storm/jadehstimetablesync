@@ -2,6 +2,7 @@ package internal
 
 import (
 	"net/url"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -11,6 +12,7 @@ const (
 	CONFIG_KEY_MAX_KW_OFFSET        = "MaxKWOffset"
 	CONFIG_KEY_MIN_SEMESTER         = "MinSemester"
 	CONFIG_KEY_MAX_SEMESTER         = "MaxSemester"
+	CONFIG_KEY_CRONSCHEDULE         = "CronSchedule"
 	CONFIG_KEY_MODULE_WHITELIST     = "ModuleWhitelist"
 	CONFIG_KEY_CALENDAR_URL         = "CalendarUrl"
 	ENVIRONMENT_KEY_CALDAV_USERNAME = "calendar_username"
@@ -22,6 +24,7 @@ const (
 	DEFAULT_MAX_KW_OFFSET = 4
 	DEFAULT_MIN_SEMESTER  = 1
 	DEFAULT_MAX_SEMESTER  = 1
+	DEFAULT_CRONSCHEDULE  = "0 0,8,14,22 * * *"
 
 	DEFAULT_CONFIG_FILE = "config.yml"
 	DEFAULT_CONFIG_PATH = "."
@@ -38,6 +41,8 @@ type RawConfig struct {
 	MaxKWOffset     int
 	MinSemester     int
 	MaxSemester     int
+	CronSchedule    string
+	Timezone        string
 	ModuleWhitelist []string
 }
 
@@ -48,12 +53,19 @@ func (c *RawConfig) GetConfig() (*Config, error) {
 		return nil, err
 	}
 
+	timezone, err := time.LoadLocation(c.Timezone)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
 		CalendarUrl:     *url,
 		Degree:          c.Degree,
 		MaxKWOffset:     c.MaxKWOffset,
 		MinSemester:     c.MinSemester,
 		MaxSemester:     c.MaxSemester,
+		Timezone:        *timezone,
+		CronSchedule:    c.CronSchedule,
 		ModuleWhitelist: c.ModuleWhitelist,
 	}, nil
 
@@ -65,6 +77,8 @@ type Config struct {
 	MaxKWOffset     int
 	MinSemester     int
 	MaxSemester     int
+	CronSchedule    string
+	Timezone        time.Location
 	ModuleWhitelist []string
 }
 
@@ -101,6 +115,7 @@ func setDefaults() {
 	viper.SetDefault(CONFIG_KEY_MAX_KW_OFFSET, DEFAULT_MAX_KW_OFFSET)
 	viper.SetDefault(CONFIG_KEY_MIN_SEMESTER, DEFAULT_MIN_SEMESTER)
 	viper.SetDefault(CONFIG_KEY_MAX_SEMESTER, DEFAULT_MAX_SEMESTER)
+	viper.SetDefault(CONFIG_KEY_CRONSCHEDULE, DEFAULT_CRONSCHEDULE)
 	viper.SetDefault(CONFIG_KEY_MODULE_WHITELIST, []string{})
 	viper.SetDefault(CONFIG_KEY_CALENDAR_URL, DEFAULT_CALENDAR_URL)
 }
