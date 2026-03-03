@@ -16,6 +16,7 @@ const (
 	CONFIG_KEY_CRONSCHEDULE         = "CronSchedule"
 	CONFIG_KEY_MODULE_WHITELIST     = "ModuleWhitelist"
 	CONFIG_KEY_CALENDAR_URL         = "CalendarUrl"
+	CONFIG_KEY_TIMEZONE             = "Timezone"
 	ENVIRONMENT_KEY_CALDAV_USERNAME = "calendar_username"
 	ENVIRONMENT_KEY_CALDAV_PASSWORD = "calendar_password"
 
@@ -119,6 +120,7 @@ func setDefaults() {
 	viper.SetDefault(CONFIG_KEY_MIN_SEMESTER, DEFAULT_MIN_SEMESTER)
 	viper.SetDefault(CONFIG_KEY_MAX_SEMESTER, DEFAULT_MAX_SEMESTER)
 	viper.SetDefault(CONFIG_KEY_CRONSCHEDULE, DEFAULT_CRONSCHEDULE)
+	viper.SetDefault(CONFIG_KEY_TIMEZONE, DEFAULT_TIMEZONE)
 	viper.SetDefault(CONFIG_KEY_MODULE_WHITELIST, []string{})
 	viper.SetDefault(CONFIG_KEY_CALENDAR_URL, DEFAULT_CALENDAR_URL)
 }
